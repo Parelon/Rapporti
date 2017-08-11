@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Create";
+}
+
+@model Rapporti.Models.CompitiViewModels.GruppiUtenti
+
+<h2>Create</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-horizontal">
+        <h4>Compito</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <fieldset>
+                    <legend>Gruppi</legend>
+                    <ul>
+                        @foreach (var gruppo in Model.gruppi)
+                        {
+                            <li><input type="radio" name="gruppo" id="gruppo-@gruppo.Id" value="@gruppo.Id" /><label for="gruppo-@gruppo.Id">@gruppo.Nome</label></li>
+                        }
+                    </ul>
+                </fieldset>
+            </div>
+            <div class="col-md-6">
+                <fieldset>
+                    <legend>Utenti</legend>
+                    <ul>
+                        @foreach (var utente in Model.utenti)
+                        {
+                            <li><input type="checkbox" name="utenti" id="@utente.Id" value="@utente.Id" /><label for="utente-@utente.Id">@utente.UserName</label></li>
+                        }
+                    </ul>
+                </fieldset>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-8 text-center">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
