@@ -16,16 +16,16 @@ namespace Rapporti.Controllers
     [Authorize]
     public class ManageController : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<Utente> _userManager;
+        private readonly SignInManager<Utente> _signInManager;
         private readonly string _externalCookieScheme;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
 
         public ManageController(
-          UserManager<User> userManager,
-          SignInManager<User> signInManager,
+          UserManager<Utente> userManager,
+          SignInManager<Utente> signInManager,
           IOptions<IdentityCookieOptions> identityCookieOptions,
           IEmailSender emailSender,
           ISmsSender smsSender,
@@ -60,6 +60,7 @@ namespace Rapporti.Controllers
             }
             var model = new IndexViewModel
             {
+                Nome = user.Nome,
                 HasPassword = await _userManager.HasPasswordAsync(user),
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 TwoFactor = await _userManager.GetTwoFactorEnabledAsync(user),
@@ -204,6 +205,47 @@ namespace Rapporti.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction(nameof(Index), new { Message = ManageMessageId.RemovePhoneSuccess });
                 }
+            }
+            return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
+        }
+
+        //
+        // GET: /Manage/ChangeNome
+        [HttpGet]
+        public async Task<IActionResult> ChangeNome()
+        {
+            var user = await GetCurrentUserAsync();
+            ChangeNomeViewModel model = new ChangeNomeViewModel();
+            model.OldName = user.Nome;
+            return View(model);
+        }
+
+        //
+        // POST: /Manage/ChangeNome
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeNome(ChangeNomeViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            if (model.NewName.Trim() == "" || model.NewName.Trim() == model.OldName)
+                return RedirectToAction("Index");
+
+            var user = await GetCurrentUserAsync();
+            user.Nome = model.NewName;
+            if (user != null)
+            {
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation(3, "User changed their name successfully.");
+                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.ChangePasswordSuccess });
+                }
+                AddErrors(result);
+                return View(model);
             }
             return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
         }
@@ -363,7 +405,7 @@ namespace Rapporti.Controllers
             Error
         }
 
-        private Task<User> GetCurrentUserAsync()
+        private Task<Utente> GetCurrentUserAsync()
         {
             return _userManager.GetUserAsync(HttpContext.User);
         }

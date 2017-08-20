@@ -8,7 +8,7 @@ using Rapporti.Models;
 
 namespace Rapporti.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<User>
+    public class ApplicationDbContext : IdentityDbContext<Utente, Ruolo, int>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -21,9 +21,18 @@ namespace Rapporti.Data
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
+            builder.Entity<Rapporto>()
+                .HasOne(a => a.AutoreUtente)
+                .WithOne()
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
+            builder.Entity<Rapporto>()
+                .HasOne(a => a.DestinatarioUtente)
+                .WithOne()
+                .OnDelete(Microsoft.EntityFrameworkCore.Metadata.DeleteBehavior.Restrict);
         }
 
-        public DbSet<Rapporti.Models.Gruppo> Gruppi { get; set; }
-        public DbSet<Rapporti.Models.Compito> Compiti { get; set; }
+        public virtual DbSet<Gruppo> Gruppi { get; set; }
+        public virtual DbSet<Assegnazione> Assegnazioni { get; set; }
+        public virtual DbSet<Rapporto> Rapporti { get; set; }
     }
 }

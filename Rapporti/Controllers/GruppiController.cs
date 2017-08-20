@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Rapporti.Data;
 using Rapporti.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Rapporti.Controllers
 {
+    [Authorize]
     public class GruppiController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,13 +21,13 @@ namespace Rapporti.Controllers
             _context = context;    
         }
 
-        // GET: Gruppoe
+        // GET: Gruppi
         public async Task<IActionResult> Index()
         {
             return View(await _context.Gruppi.ToListAsync());
         }
 
-        // GET: Gruppoe/Details/5
+        // GET: Gruppi/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,13 +45,13 @@ namespace Rapporti.Controllers
             return View(gruppo);
         }
 
-        // GET: Gruppoe/Create
+        // GET: Gruppi/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Gruppoe/Create
+        // POST: Gruppi/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -65,7 +67,7 @@ namespace Rapporti.Controllers
             return View(gruppo);
         }
 
-        // GET: Gruppoe/Edit/5
+        // GET: Gruppi/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,7 +83,7 @@ namespace Rapporti.Controllers
             return View(gruppo);
         }
 
-        // POST: Gruppoe/Edit/5
+        // POST: Gruppi/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
@@ -116,7 +118,7 @@ namespace Rapporti.Controllers
             return View(gruppo);
         }
 
-        // GET: Gruppoe/Delete/5
+        // GET: Gruppi/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -134,7 +136,7 @@ namespace Rapporti.Controllers
             return View(gruppo);
         }
 
-        // POST: Gruppoe/Delete/5
+        // POST: Gruppi/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

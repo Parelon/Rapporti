@@ -18,16 +18,16 @@ namespace Rapporti.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<Utente> _userManager;
+        private readonly SignInManager<Utente> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
 
         public AccountController(
-            UserManager<User> userManager,
-            SignInManager<User> signInManager,
+            UserManager<Utente> userManager,
+            SignInManager<Utente> signInManager,
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
             ISmsSender smsSender,
@@ -112,7 +112,7 @@ namespace Rapporti.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = model.Email, Email = model.Email };
+                var user = new Utente { UserName = model.Email, Email = model.Email, Nome = model.Nome };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -214,7 +214,7 @@ namespace Rapporti.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new User { UserName = model.Email, Email = model.Email };
+                var user = new Utente { UserName = model.Email, Email = model.Email };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

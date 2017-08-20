@@ -43,10 +43,11 @@ namespace Rapporti
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+            services.AddIdentity<Utente, Ruolo>()
+                .AddEntityFrameworkStores<ApplicationDbContext, int>()
                 .AddDefaultTokenProviders();
 
+            services.AddSession();
             services.AddMvc();
 
             // Add application services.
@@ -74,6 +75,7 @@ namespace Rapporti
             app.UseStaticFiles();
 
             app.UseIdentity();
+            app.UseSession();
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
 

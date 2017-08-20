@@ -1,0 +1,22 @@
+@model List<Rapporti.Models.Assegnazione>
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>L'utente fa parte dei seguenti gruppi:</h4>
+    <hr />
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>@item.Gruppo.Nome</li>
+        }
+    </ul>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@ViewData["UtenteId"]">Edit</a> | 
+    <a asp-action="Index">Back to List</a>
+</div>

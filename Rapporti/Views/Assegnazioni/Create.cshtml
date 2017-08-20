@@ -1,0 +1,62 @@
+@model List<Rapporti.Models.AssegnazioniViewModels.CreateViewModel>
+@{
+//ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<form asp-action="Create">
+    <div class="form-horizontal">
+        <h4>Assegnazione</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @*<select asp-for="GruppoId" class ="form-control" asp-items="ViewBag.GruppoId"></select>*@
+                    <fieldset>
+                        <legend>Gruppo</legend>
+                        <ul>
+                            @foreach (var item in ViewData["Gruppi"] as List<Gruppo>)
+                            {                                
+                                <li>
+                                    <input type="radio" name="gruppoID" value="@item.Id" id="gruppo @item.Id"/>
+                                    <label for="gruppo @item.Id">@item.Nome</label>
+                                </li>
+                            }
+                        </ul>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <fieldset>
+                        <legend>Utenti</legend>
+                        <ul>
+                            @for(var idx = 0; idx < Model.Count; idx++)
+                            {
+                                @Html.CheckBoxFor(i => Model[idx].Selezionato);
+                                @Html.HiddenFor(i => Model[idx].Nome);
+                                @Html.HiddenFor(i => Model[idx].ID);
+                                @Html.LabelFor(i => Model[idx].Selezionato, labelText: Model[idx].Nome);
+                            }
+                        </ul>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

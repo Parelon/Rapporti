@@ -1,0 +1,45 @@
+@model List<Rapporti.Models.AssegnazioniViewModels.CreateViewModel>
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit</h2>
+
+<form asp-action="Edit">
+    <div class="form-horizontal">
+        <h4>Assegnazione</h4>
+        <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <input type="hidden" name="id" value="@ViewData["UtenteId"]" />
+
+        <fieldset>
+            <legend>Gruppi cui &egrave; assegnato questo utente: </legend>
+            <ul>
+                @for (var idx = 0; idx < Model.Count; idx++)
+                {
+                <li>
+                    @Html.CheckBoxFor(i => Model[idx].Selezionato)
+                    @Html.HiddenFor(i => Model[idx].Nome)
+                    @Html.HiddenFor(i => Model[idx].ID)
+                    @Html.LabelFor(i => Model[idx].Selezionato, labelText: Model[idx].Nome)
+                </li>
+                }
+            </ul>
+        </fieldset>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

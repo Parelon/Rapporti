@@ -8,6 +8,8 @@ namespace Rapporti.Models.ManageViewModels
 {
     public class IndexViewModel
     {
+        public string Nome { get; set; }
+
         public bool HasPassword { get; set; }
 
         public IList<UserLoginInfo> Logins { get; set; }
