@@ -27,13 +27,13 @@ namespace Rapporti.Controllers
         // GET: Rapporti
         public async Task<IActionResult> Index()
         {
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.UserName == HttpContext.User.Identity.Name);
+            var user = await _manager.GetUserAsync(User);
             var myGroups = await _context.Assegnazioni.Where(a => a.UtenteId == user.Id).Include(a => a.Gruppo).Select(g => g.GruppoId).ToListAsync();
             var model = _context.Rapporti
-                .Include(r => r.AutoreUtente)
+                .Include(r => r.Autore)
                 .Include(g => g.Gruppo)
-                .Include(d => d.DestinatarioUtente)
-                .Where(a => a.AutoreUtenteId == user.Id || a.DestinatarioUtenteId == user.Id || (myGroups.Contains(a.GruppoId) && a.DestinatarioUtenteId == null));
+                .Include(d => d.Destinatario)
+                .Where(a => a.AutoreId == user.Id || a.DestinatarioId == user.Id || (myGroups.Contains(a.GruppoId) && a.DestinatarioId == null));
             return View(model.Distinct().ToList());
         }
 
@@ -46,7 +46,7 @@ namespace Rapporti.Controllers
             }
 
             var rapporto = await _context.Rapporti
-                .Include(r => r.AutoreUtente)
+                .Include(r => r.Autore)
                 .Include(r => r.Gruppo)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (rapporto == null)
@@ -72,16 +72,21 @@ namespace Rapporti.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int destinatarioId, [Bind("Id,Testo,GruppoId")] Rapporto rapporto)
         {
-            rapporto.Data = DateTime.Now.Date;
-            rapporto.AutoreUtente = await _manager.GetUserAsync(HttpContext.User);
-            rapporto.Gruppo = await _context.Gruppi.FindAsync(rapporto.GruppoId);
-            if (destinatarioId != 0)
-                rapporto.DestinatarioUtente = await _context.Users.FindAsync(destinatarioId);
-            await _context.AddAsync(rapporto);
-            if (await _context.SaveChangesAsync() > 0)
-                return RedirectToAction("Index");
-            ViewData["DestinatarioId"] = new SelectList(_context.Users, "Id", "Nome");
-            ViewData["GruppoId"] = new SelectList(_context.Gruppi, "Id", "Nome");
+            if (_context.Assegnazioni.Count(a => a.GruppoId == rapporto.GruppoId && a.UtenteId == destinatarioId) > 0)
+            {
+                rapporto.Data = DateTime.Now.Date;
+                rapporto.Autore = await _manager.GetUserAsync(User);
+                rapporto.Gruppo = await _context.Gruppi.FindAsync(rapporto.GruppoId);
+                if (destinatarioId != 0)
+                    rapporto.Destinatario = await _context.Users.FindAsync(destinatarioId);
+                await _context.AddAsync(rapporto);
+                if (await _context.SaveChangesAsync() > 0)
+                    return RedirectToAction("Index");
+            }
+            else
+                ViewData["Errore"] = "Il destinatario non fa parte del gruppo.";
+            ViewData["DestinatarioId"] = new SelectList(_context.Users, "Id", "Nome", rapporto.DestinatarioId);
+            ViewData["GruppoId"] = new SelectList(_context.Gruppi, "Id", "Nome", rapporto.GruppoId);
             return View(rapporto);
         }
 
@@ -94,9 +99,9 @@ namespace Rapporti.Controllers
             }
 
             var rapporto = await _context.Rapporti
-                .Include(m => m.AutoreUtente)
+                .Include(m => m.Autore)
                 .Include(m => m.Gruppo)
-                .Include(m => m.DestinatarioUtente)
+                .Include(m => m.Destinatario)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (rapporto == null)
             {
@@ -139,7 +144,7 @@ namespace Rapporti.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["AutoreUtenteId"] = new SelectList(_context.Users, "Id", "Id", rapporto.AutoreUtenteId);
+            ViewData["AutoreUtenteId"] = new SelectList(_context.Users, "Id", "Id", rapporto.AutoreId);
             ViewData["GruppoId"] = new SelectList(_context.Gruppi, "Id", "Id", rapporto.GruppoId);
             //ViewData["SoggettoUtenteId"] = new SelectList(_context.Users, "Id", "Id", rapporto.SoggettoUtenteId);
             return View(rapporto);
@@ -154,9 +159,9 @@ namespace Rapporti.Controllers
             }
 
             var rapporto = await _context.Rapporti
-                .Include(r => r.AutoreUtente)
+                .Include(r => r.Autore)
                 .Include(r => r.Gruppo)
-                .Include(r => r.DestinatarioUtente)
+                .Include(r => r.Destinatario)
                 .SingleOrDefaultAsync(m => m.Id == id);
             if (rapporto == null)
             {

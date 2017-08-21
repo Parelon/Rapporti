@@ -14,6 +14,11 @@ namespace Rapporti.Models
         public string Nome { get; set; }
 
         public List<Assegnazione> Assegnazioni { get; set; }
-        public List<Rapporto> Rapporti { get; set; }
+        
+        [ForeignKey("AutoreId")]
+        public virtual List<Rapporto> RapportiScritti { get; set; }
+
+        [ForeignKey("DestinatarioId")]
+        public virtual List<Rapporto> RapportiRicevuti { get; set; }
     }
 }

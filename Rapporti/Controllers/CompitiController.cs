@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Rapporti.Data;
-using Rapporti.Models.CompitiViewModels;
 using Rapporti.Models;
 
 namespace Rapporti.Controllers
@@ -44,12 +43,7 @@ namespace Rapporti.Controllers
         // GET: Compiti/Create
         public ActionResult Create()
         {
-            GruppiUtenti dati = new GruppiUtenti
-            {
-                gruppi = _context.Gruppi.ToList(),
-                utenti = _context.Users.ToList()
-            };
-            return View(dati);
+            return View();
         }
 
         // POST: Compiti/Create

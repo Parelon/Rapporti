@@ -13,8 +13,8 @@ namespace Rapporti.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.1.2")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
+                .HasAnnotation("ProductVersion", "1.1.2");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<int>", b =>
                 {
@@ -115,6 +115,24 @@ namespace Rapporti.Migrations
                     b.ToTable("Assegnazioni");
                 });
 
+            modelBuilder.Entity("Rapporti.Models.Compito", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("GruppoId");
+
+                    b.Property<string>("UtenteId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GruppoId");
+
+                    b.HasIndex("UtenteId");
+
+                    b.ToTable("Compiti");
+                });
+
             modelBuilder.Entity("Rapporti.Models.Gruppo", b =>
                 {
                     b.Property<int>("Id")
@@ -132,29 +150,23 @@ namespace Rapporti.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("AutoreUtenteId");
+                    b.Property<int>("AutoreId");
 
                     b.Property<DateTime>("Data");
 
-                    b.Property<int?>("DestinatarioUtenteId");
+                    b.Property<int?>("DestinatarioId");
 
                     b.Property<int>("GruppoId");
 
                     b.Property<string>("Testo");
 
-                    b.Property<int?>("UtenteId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("AutoreUtenteId")
-                        .IsUnique();
+                    b.HasIndex("AutoreId");
 
-                    b.HasIndex("DestinatarioUtenteId")
-                        .IsUnique();
+                    b.HasIndex("DestinatarioId");
 
                     b.HasIndex("GruppoId");
-
-                    b.HasIndex("UtenteId");
 
                     b.ToTable("Rapporti");
                 });
@@ -286,22 +298,19 @@ namespace Rapporti.Migrations
 
             modelBuilder.Entity("Rapporti.Models.Rapporto", b =>
                 {
-                    b.HasOne("Rapporti.Models.Utente", "AutoreUtente")
-                        .WithOne()
-                        .HasForeignKey("Rapporti.Models.Rapporto", "AutoreUtenteId");
+                    b.HasOne("Rapporti.Models.Utente", "Autore")
+                        .WithMany("RapportiScritti")
+                        .HasForeignKey("AutoreId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Rapporti.Models.Utente", "DestinatarioUtente")
-                        .WithOne()
-                        .HasForeignKey("Rapporti.Models.Rapporto", "DestinatarioUtenteId");
+                    b.HasOne("Rapporti.Models.Utente", "Destinatario")
+                        .WithMany("RapportiRicevuti")
+                        .HasForeignKey("DestinatarioId");
 
                     b.HasOne("Rapporti.Models.Gruppo", "Gruppo")
                         .WithMany("Rapporti")
                         .HasForeignKey("GruppoId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Rapporti.Models.Utente")
-                        .WithMany("Rapporti")
-                        .HasForeignKey("UtenteId");
                 });
         }
     }

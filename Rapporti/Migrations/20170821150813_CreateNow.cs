@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Rapporti.Migrations
 {
-    public partial class Create : Migration
+    public partial class CreateNow : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,11 +24,25 @@ namespace Rapporti.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Compiti",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    GruppoId = table.Column<string>(nullable: true),
+                    UtenteId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Compiti", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Gruppi",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     Nome = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -41,7 +55,7 @@ namespace Rapporti.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
@@ -56,13 +70,14 @@ namespace Rapporti.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    Nome = table.Column<string>(nullable: true),
                     NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
                     PasswordHash = table.Column<string>(nullable: true),
@@ -82,7 +97,7 @@ namespace Rapporti.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
                     RoleId = table.Column<int>(nullable: false)
@@ -103,7 +118,7 @@ namespace Rapporti.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
                     UserId = table.Column<int>(nullable: false)
@@ -168,7 +183,7 @@ namespace Rapporti.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
                     GruppoId = table.Column<int>(nullable: false),
                     UtenteId = table.Column<int>(nullable: false)
                 },
@@ -194,18 +209,25 @@ namespace Rapporti.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    AutoreUtenteId = table.Column<int>(nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn),
+                    AutoreId = table.Column<int>(nullable: false),
+                    Data = table.Column<DateTime>(nullable: false),
+                    DestinatarioId = table.Column<int>(nullable: true),
                     GruppoId = table.Column<int>(nullable: false),
-                    SoggettoUtenteId = table.Column<int>(nullable: false),
                     Testo = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Rapporti", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Rapporti_AspNetUsers_AutoreUtenteId",
-                        column: x => x.AutoreUtenteId,
+                        name: "FK_Rapporti_AspNetUsers_AutoreId",
+                        column: x => x.AutoreId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Rapporti_AspNetUsers_DestinatarioId",
+                        column: x => x.DestinatarioId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -215,12 +237,6 @@ namespace Rapporti.Migrations
                         principalTable: "Gruppi",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Rapporti_AspNetUsers_SoggettoUtenteId",
-                        column: x => x.SoggettoUtenteId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -254,21 +270,29 @@ namespace Rapporti.Migrations
                 column: "UtenteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rapporti_AutoreUtenteId",
+                name: "IX_Compiti_GruppoId",
+                table: "Compiti",
+                column: "GruppoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Compiti_UtenteId",
+                table: "Compiti",
+                column: "UtenteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rapporti_AutoreId",
                 table: "Rapporti",
-                column: "AutoreUtenteId",
-                unique: true);
+                column: "AutoreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rapporti_DestinatarioId",
+                table: "Rapporti",
+                column: "DestinatarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rapporti_GruppoId",
                 table: "Rapporti",
                 column: "GruppoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Rapporti_SoggettoUtenteId",
-                table: "Rapporti",
-                column: "SoggettoUtenteId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
@@ -307,6 +331,9 @@ namespace Rapporti.Migrations
 
             migrationBuilder.DropTable(
                 name: "Assegnazioni");
+
+            migrationBuilder.DropTable(
+                name: "Compiti");
 
             migrationBuilder.DropTable(
                 name: "Rapporti");

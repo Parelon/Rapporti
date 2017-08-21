@@ -20,15 +20,17 @@ namespace Rapporti.Models
         public DateTime Data { get; set; }
         
         [Display(Name = "Autore")]
-        public Utente AutoreUtente { get; set; }
-        public int AutoreUtenteId { get; set; }
+        [InverseProperty("RapportiScritti")]
+        public Utente Autore { get; set; }
+        public int AutoreId { get; set; }
         
         [Display(Name = "Gruppo")]
-        public virtual Gruppo Gruppo { get; set; }
+        public Gruppo Gruppo { get; set; }
         public int GruppoId { get; set; }
 
         [Display(Name = "Destinatario")]
-        public virtual Utente DestinatarioUtente { get; set; }
-        public int? DestinatarioUtenteId { get; set; }
+        [InverseProperty("RapportiRicevuti")]
+        public Utente Destinatario { get; set; }
+        public int? DestinatarioId { get; set; }
     }
 }

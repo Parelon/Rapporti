@@ -13,13 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.AutoreUtente)
+                @Html.DisplayNameFor(model => model.Autore)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Gruppo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DestinatarioUtente)
+                @Html.DisplayNameFor(model => model.Destinatario)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Testo)
@@ -35,19 +35,19 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.AutoreUtente.Nome)
+                    @Html.DisplayFor(modelItem => item.Autore.Nome)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Gruppo.Nome)
                 </td>
                 <td>
-                    @if (item.DestinatarioUtente == null)
+                    @if (item.Destinatario == null)
                     {
                         <span>Tutti</span>
                     }
                     else
                     {
-                        <span>@item.DestinatarioUtente.Nome</span>
+                        <span>@item.Destinatario.Nome</span>
                     }
                 </td>
                 <td>

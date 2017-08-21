@@ -5,6 +5,10 @@
 }
 
 <h2>Create</h2>
+@if (@ViewData["Errore"] != null)
+{
+    <div class="alert alert-danger">@ViewData["Errore"]</div>
+}
 
 <form asp-action="Create">
     <div class="form-horizontal">

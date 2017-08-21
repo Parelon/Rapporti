@@ -27,7 +27,7 @@ namespace Rapporti.Controllers
         {
             List<IndexAssegnazioneViewModel> model = new List<IndexAssegnazioneViewModel>();
             //var applicationDbContext = _context.Assegnazioni.Include(a => a.Gruppo).Include(a => a.Utente);
-            foreach (var user in _context.Users)
+            foreach (var user in await _context.Users.ToListAsync())
             {
                 var groupedByUser = _context.Assegnazioni.Include(a => a.Gruppo).Include(a => a.Utente).Where(a => a.Utente == user).Select(a => a.Gruppo.Nome);
                 model.Add(new IndexAssegnazioneViewModel()
@@ -92,17 +92,9 @@ namespace Rapporti.Controllers
                 foreach (var utente in model)
                 {
                     if (utente.Selezionato)
-                    {
-                        Assegnazione assegnazione = new Assegnazione { Gruppo = gruppo, Utente = await _context.Users.FindAsync(utente.ID) };
-                        gruppo.Assegnazioni.Add(assegnazione);
-                        await _context.AddAsync(assegnazione);
-                    }
+                        await _context.AddAsync(new Assegnazione { Gruppo = gruppo, Utente = await _context.Users.FindAsync(utente.ID) });
                     else
-                    {
-                        Assegnazione assegnazione = await _context.Assegnazioni.SingleOrDefaultAsync(a => a.GruppoId == gruppoID && a.UtenteId == utente.ID);
-                        assegnazione.Gruppo.Assegnazioni.Remove(assegnazione);
-                        _context.Assegnazioni.Remove(assegnazione);                        
-                    }                        
+                        _context.Assegnazioni.Remove( await _context.Assegnazioni.SingleOrDefaultAsync(a => a.GruppoId == gruppoID && a.UtenteId == utente.ID));
                 }
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -119,7 +111,7 @@ namespace Rapporti.Controllers
             }
 
             List<CreateViewModel> model = new List<CreateViewModel>();
-            foreach (var item in _context.Gruppi)
+            foreach (var item in await _context.Gruppi.ToListAsync())
             {
                 var assegnazione = await _context.Assegnazioni.SingleOrDefaultAsync(a => a.UtenteId == id && a.GruppoId == item.Id);
                 if (assegnazione == null)
